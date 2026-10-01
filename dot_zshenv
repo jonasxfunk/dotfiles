@@ -28,7 +28,7 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
 # Pager
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-export LESS="--RAW-CONTROL-CHARS --QUIET --no-vbell"
+export LESS="--RAW-CONTROL-CHARS --QUIET"
 
 
 # Starship
