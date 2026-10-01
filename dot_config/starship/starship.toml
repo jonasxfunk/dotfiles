@@ -98,19 +98,22 @@ time_format = "%H:%M"
 format = "[ $time](fg:fg) "
 
 [custom.dir_icon]
-command = "echo "
+symbol = ""
 when = ''' test "$PWD" != "$HOME" '''
-format = "[$output](fg:aqua) "
+# sh instead of $STARSHIP_SHELL (zsh): zsh sources ~/.zshenv incl. brew calls
+# on every prompt, which timed out on slow mounts like the SMB share
+shell = ["sh"]
+format = "[$symbol](fg:aqua) "
 
 [custom.html]
-command = "echo "
+symbol = ""
 detect_extensions = ["html", "htm"]
-format = "[$output](fg:orange) "
+format = "[$symbol](fg:orange) "
 
 [custom.css]
-command = "echo "
+symbol = ""
 detect_extensions = ["css", "scss", "sass", "less"]
-format = "[$output](fg:blue) "
+format = "[$symbol](fg:blue) "
 
 [character]
 success_symbol = "[❯](fg:green)"
