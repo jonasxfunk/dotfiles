@@ -6,12 +6,13 @@ Neovim, tmux, WezTerm, yazi, starship, bat.
 ## Install
 
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply jonasxfunk/dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply jonasxfunk/dotfiles
 ```
 
 `run_once_install-tools.sh` installs the CLI tools (ripgrep, fzf, fd, bat,
 eza, zoxide, starship, uv, ...) as user-space binaries into `~/.local/bin`
-on macOS and Linux, no root required.
+on macOS and Linux, no root required. `-b` puts the chezmoi binary there too
+(the installer defaults to `./bin` in the current directory).
 
 Update an existing install:
 

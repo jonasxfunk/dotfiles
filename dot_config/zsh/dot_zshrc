@@ -3,7 +3,6 @@ typeset -U path
 
 path=(
     "$HOME/.local/bin"
-    "$HOME/.local/share"
     "$HOME/.local/share/uv/tools/jupyterlab/bin"
     $path
     "/usr/bin"
