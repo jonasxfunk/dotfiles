@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Scaffolds a new Python project: uv init, Ruff/pyright/pytest as pinned
+# dev-dependencies, git initialized with a first commit. Satisfies F3
+# ("neues Repo -> lauffaehig in < 2 min"): ruff/pyright/pytest all work
+# with zero extra config once this has run.
+#
+# Usage: new-py-project <name>
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+	echo "Usage: new-py-project <name>" >&2
+	exit 1
+fi
+
+name="$1"
+
+uv init "$name"
+cd "$name"
+uv add --dev ruff pyright pytest ipython ipykernel
+uv run python -m ipykernel install --user --name "$name"
+mkdir -p tests
+
+echo '{"venvPath": ".", "venv": ".venv"}' >pyrightconfig.json
+
+git add -A
+git commit -q -m "Initial project scaffold (uv + Ruff + pyright + pytest)"
+
+echo "Ready at $(pwd)"
+echo "  uv run ruff check ."
+echo "  uv run pyright"
+echo "  uv run pytest"

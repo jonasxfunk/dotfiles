@@ -1,0 +1,40 @@
+
+# XDG Configuration
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+
+# SSH-Agent (Bitwarden desktop app, macOS-only sandbox path — only set it if
+# it actually exists, so a Linux box falls through to its own ssh-agent/
+# keyring instead of pointing at a socket that isn't there)
+bitwarden_ssh_sock="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+[[ -S "$bitwarden_ssh_sock" ]] && export SSH_AUTH_SOCK="$bitwarden_ssh_sock"
+unset bitwarden_ssh_sock
+
+
+# Editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+
+# GPG
+export GPG_TTY=$(tty)
+
+
+# ZDOTFiles
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+
+
+# Pager
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export LESS="--RAW-CONTROL-CHARS --QUIET --no-vbell"
+
+
+# Starship
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+
+
+# Homebrew: only eval shellenv if it's actually installed, so a fresh
+# machine without Homebrew yet doesn't error on every shell start.
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"

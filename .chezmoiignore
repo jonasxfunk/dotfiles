@@ -1,0 +1,3 @@
+.config/tmux/plugins
+.config/nvim/nvim-pack-lock.json
+README.md

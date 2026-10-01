@@ -1,0 +1,87 @@
+# Path
+typeset -U path
+
+path=(
+    "$HOME/.local/bin"
+    "$HOME/.local/share"
+    "$HOME/.local/share/uv/tools/jupyterlab/bin"
+    $path
+    "/usr/bin"
+    "/bin"
+    "/usr/sbin"
+    "/sbin"
+)
+
+#History
+HISTSIZE=100000
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Shell behaviour
+setopt autocd
+setopt nobeep
+setopt NUMERIC_GLOB_SORT
+setopt globdots
+
+# Completion
+autoload -Uz compinit
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
+
+
+# Initialize zoxide
+eval "$(zoxide init --cmd cd zsh)"
+
+
+# Enable interactive completion menu selection
+zstyle ':completion:*' menu select
+
+# Make completion case-insensitive
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
+# Hidden files
+# zstyle ':completion:*' globdots true
+
+# Completion list colors
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -a --icons --color=always -- $realpath'
+
+# Fuzzy finder (works identically on macOS and Linux — fzf ships its own zsh integration)
+if command -v fzf >/dev/null 2>&1; then
+	eval "$(fzf --zsh)"
+fi
+
+# Yazi Setup
+function y() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+# Modular Config files
+
+# Aliases
+source "$ZDOTDIR/.zsh_aliases"
+
+# fzf configuration
+source "$ZDOTDIR/fzf.zsh"
+
+# Plugins and plugin manager
+source "$ZDOTDIR/plugins.zsh"
+
+# Custom keybindings (after the plugins, so our bindings override their defaults)
+source "$ZDOTDIR/bindings.zsh"
+
+# Prompt/theme
+source "$ZDOTDIR/prompt.zsh"

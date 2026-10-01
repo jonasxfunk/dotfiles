@@ -1,0 +1,6 @@
+# tmux plugin manager (tpm) clones its plugins here from the list in
+# tmux.conf (prefix+I to install/update on a fresh machine) — not vendored.
+dot_config/tmux/plugins/
+
+# macOS noise
+.DS_Store
