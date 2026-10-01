@@ -288,6 +288,36 @@ if ! command -v yq >/dev/null 2>&1; then
 	fi
 fi
 
+# node (latest LTS): mason builds many language servers from npm packages
+# (pyright, bash/yaml/json/dockerfile LS, prettierd, ...), and servers rarely
+# have a usable node. Official tarball into ~/.local/opt, symlinked like nvim.
+if ! command -v node >/dev/null 2>&1; then
+	echo "Installing node..."
+	case "$os-$arch" in
+	Darwin-arm64) target="darwin-arm64" ;;
+	Darwin-x86_64) target="darwin-x64" ;;
+	Linux-x86_64) target="linux-x64" ;;
+	Linux-aarch64) target="linux-arm64" ;;
+	*)
+		echo "node: unsupported platform $os-$arch" >&2
+		target=""
+		;;
+	esac
+	if [ -n "$target" ]; then
+		# index.json has one release per line, newest first; LTS ones carry a codename
+		ver="$(curl -fsSL https://nodejs.org/dist/index.json |
+			grep -m1 '"lts":"' | sed -E 's/.*"version":"([^"]+)".*/\1/')"
+		mkdir -p "$HOME/.local/opt"
+		rm -rf "$HOME/.local/opt/node"
+		url="https://nodejs.org/dist/${ver}/node-${ver}-${target}.tar.gz"
+		curl -fsSL "$url" | tar -xz -C "$HOME/.local/opt"
+		mv "$HOME/.local/opt/node-${ver}-${target}" "$HOME/.local/opt/node"
+		for bin in node npm npx; do
+			ln -sf "$HOME/.local/opt/node/bin/$bin" "$bin"
+		done
+	fi
+fi
+
 # uv: official installer detects OS/arch itself and installs into ~/.local/bin
 if ! command -v uv >/dev/null 2>&1; then
 	echo "Installing uv..."

@@ -84,6 +84,24 @@ local mason_ensure_installed = {
 	"marksman",
 }
 
+-- Mason builds some packages from source ecosystems. On machines lacking the
+-- toolchain (e.g. no go on a server) skip them instead of failing on every start.
+local mason_toolchains = {
+	npm = "npm",
+	golang = "go",
+	luarocks = "luarocks",
+	cargo = "cargo",
+	gem = "gem",
+}
+
+local function missing_toolchain(pkg)
+	local ecosystem = pkg.spec.source.id:match("^pkg:([^/]+)/")
+	local exe = mason_toolchains[ecosystem]
+	if exe and vim.fn.executable(exe) == 0 then
+		return exe
+	end
+end
+
 require("mason-registry").refresh(function()
 	local registry = require("mason-registry")
 	for _, name in ipairs(mason_ensure_installed) do
@@ -91,7 +109,10 @@ require("mason-registry").refresh(function()
 		if not ok then
 			vim.notify("mason: unknown package '" .. name .. "'", vim.log.levels.WARN)
 		elseif not pkg:is_installed() then
-			pkg:install()
+			-- Skipped silently; :Mason still lists them as not installed
+			if not missing_toolchain(pkg) then
+				pkg:install()
+			end
 		end
 	end
 end)
