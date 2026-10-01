@@ -195,6 +195,29 @@ if ! command -v fzf >/dev/null 2>&1 || ! fzf --zsh >/dev/null 2>&1; then
 	fi
 fi
 
+# yazi (+ ya, its package manager CLI); upstream only ships .zip archives
+if ! command -v yazi >/dev/null 2>&1; then
+	echo "Installing yazi..."
+	case "$os-$arch" in
+	Darwin-arm64) target="aarch64-apple-darwin" ;;
+	Darwin-x86_64) target="x86_64-apple-darwin" ;;
+	Linux-x86_64) target="x86_64-unknown-linux-musl" ;;
+	Linux-aarch64) target="aarch64-unknown-linux-musl" ;;
+	*)
+		echo "yazi: unsupported platform $os-$arch" >&2
+		target=""
+		;;
+	esac
+	if [ -n "$target" ]; then
+		tmp="$(mktemp -d)"
+		url="https://github.com/sxyazi/yazi/releases/latest/download/yazi-${target}.zip"
+		curl -fsSL -o "$tmp/yazi.zip" "$url"
+		unzip -q "$tmp/yazi.zip" -d "$tmp"
+		mv "$tmp/yazi-${target}/yazi" "$tmp/yazi-${target}/ya" .
+		rm -rf "$tmp"
+	fi
+fi
+
 # eza: no macOS binaries upstream -> Homebrew there; static binary on Linux
 if ! command -v eza >/dev/null 2>&1; then
 	echo "Installing eza..."
