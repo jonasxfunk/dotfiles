@@ -304,9 +304,13 @@ if ! command -v node >/dev/null 2>&1; then
 		;;
 	esac
 	if [ -n "$target" ]; then
-		# index.json has one release per line, newest first; LTS ones carry a codename
-		ver="$(curl -fsSL https://nodejs.org/dist/index.json |
-			grep -m1 '"lts":"' | sed -E 's/.*"version":"([^"]+)".*/\1/')"
+		# index.json has one release per line, newest first; LTS ones carry a
+		# codename. Downloaded to a file first: piping curl into `grep -m1`
+		# closes the pipe early, curl fails with exit 23 and pipefail aborts.
+		tmp="$(mktemp -d)"
+		curl -fsSL -o "$tmp/index.json" https://nodejs.org/dist/index.json
+		ver="$(grep -m1 '"lts":"' "$tmp/index.json" | sed -E 's/.*"version":"([^"]+)".*/\1/')"
+		rm -rf "$tmp"
 		mkdir -p "$HOME/.local/opt"
 		rm -rf "$HOME/.local/opt/node"
 		url="https://nodejs.org/dist/${ver}/node-${ver}-${target}.tar.gz"
