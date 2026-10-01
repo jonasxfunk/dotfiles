@@ -14,6 +14,8 @@ path=(
 #History
 HISTSIZE=100000
 HISTFILE="$XDG_STATE_HOME/zsh/history"
+# zsh does not create the parent dir itself (fresh machines have no ~/.local/state/zsh)
+[[ -d ${HISTFILE:h} ]] || mkdir -p ${HISTFILE:h}
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 setopt appendhistory

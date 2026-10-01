@@ -172,8 +172,9 @@ if [ "$os" = "Linux" ] && ! infocmp xterm-kitty >/dev/null 2>&1; then
 	rm -rf "$tmp"
 fi
 
-# fzf
-if ! command -v fzf >/dev/null 2>&1; then
+# fzf: `fzf --zsh` (used in .zshrc) needs 0.48+, older distro packages
+# (e.g. Ubuntu 24.04 ships 0.44) lack it, so also replace an outdated fzf
+if ! command -v fzf >/dev/null 2>&1 || ! fzf --zsh >/dev/null 2>&1; then
 	echo "Installing fzf..."
 	tag="$(github_latest_tag junegunn/fzf)"
 	ver="${tag#v}"
