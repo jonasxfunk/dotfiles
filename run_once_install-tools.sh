@@ -36,6 +36,32 @@ if ! command -v tree-sitter >/dev/null 2>&1; then
 	fi
 fi
 
+# neovim: the config uses vim.pack (0.12+), which distro packages often lack,
+# so also replace an existing nvim that is too old. The tarball is unpacked to
+# ~/.local/opt and symlinked into ~/.local/bin, which comes first in $path.
+if ! command -v nvim >/dev/null 2>&1 ||
+	! nvim --clean --headless -c 'if !has("nvim-0.12") | cquit | endif | qa' >/dev/null 2>&1; then
+	echo "Installing neovim..."
+	case "$os-$arch" in
+	Darwin-arm64) asset="nvim-macos-arm64" ;;
+	Darwin-x86_64) asset="nvim-macos-x86_64" ;;
+	Linux-x86_64) asset="nvim-linux-x86_64" ;;
+	Linux-aarch64) asset="nvim-linux-arm64" ;;
+	*)
+		echo "neovim: unsupported platform $os-$arch" >&2
+		asset=""
+		;;
+	esac
+	if [ -n "$asset" ]; then
+		mkdir -p "$HOME/.local/opt"
+		rm -rf "$HOME/.local/opt/nvim" "$HOME/.local/opt/$asset"
+		url="https://github.com/neovim/neovim/releases/latest/download/$asset.tar.gz"
+		curl -fsSL "$url" | tar -xz -C "$HOME/.local/opt"
+		mv "$HOME/.local/opt/$asset" "$HOME/.local/opt/nvim"
+		ln -sf "$HOME/.local/opt/nvim/bin/nvim" nvim
+	fi
+fi
+
 # starship
 if ! command -v starship >/dev/null 2>&1; then
 	echo "Installing starship..."
