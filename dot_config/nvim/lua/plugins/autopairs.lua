@@ -1,10 +1,6 @@
 vim.pack.add({ "https://github.com/windwp/nvim-autopairs" })
 
 local autopairs = require("nvim-autopairs")
+-- Quotes pair everywhere, prose included: the default rules already skip pairing
+-- after a letter/digit, so apostrophes in contractions ("it's") stay single.
 autopairs.setup({})
-
--- Don't auto-pair quotes in prose (apostrophes in contractions, inline quotation marks) —
--- brackets still pair everywhere, including fenced code blocks inside markdown.
-local prose_filetypes = { "markdown", "text", "gitcommit" }
-autopairs.get_rules("'")[1].not_filetypes = prose_filetypes
-autopairs.get_rules('"')[1].not_filetypes = prose_filetypes
